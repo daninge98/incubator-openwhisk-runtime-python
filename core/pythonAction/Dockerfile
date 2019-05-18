@@ -17,7 +17,8 @@
 
 # Dockerfile for python actions, overrides and extends ActionRunner from actionProxy
 FROM openwhisk/dockerskeleton:latest
-
+RUN echo http://dl-cdn.alpinelinux.org/alpine/edge/testing >> /etc/apk/repositories
+RUN apk update
 RUN apk add --no-cache \
         bzip2-dev \
         gcc \
@@ -26,7 +27,8 @@ RUN apk add --no-cache \
         libxml2-dev \
         libffi-dev \
         linux-headers \
-        openssl-dev
+        openssl-dev \
+	criu
 
 # Install common modules for python
 RUN pip install \
