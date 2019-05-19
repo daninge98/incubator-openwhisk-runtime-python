@@ -16,22 +16,14 @@
 #
 
 # Dockerfile for python actions, overrides and extends ActionRunner from actionProxy
-FROM openwhisk/dockerskeleton:latest
-RUN echo http://dl-cdn.alpinelinux.org/alpine/edge/testing >> /etc/apk/repositories
-RUN apk update
-RUN apk add --no-cache \
-        bzip2-dev \
-        gcc \
-        libc-dev \
-        libxslt-dev \
-        libxml2-dev \
-        libffi-dev \
-        linux-headers \
-        openssl-dev \
-	criu
+FROM ubuntu:18.04 
+
+RUN apt update
+
+RUN apt install -y python3 python3-pip python-gevent python-gevent-websocket
 
 # Install common modules for python
-RUN pip install \
+RUN pip3 install \
     beautifulsoup4==4.6.3 \
     httplib2==0.11.3 \
     kafka_python==1.4.3 \
@@ -41,13 +33,16 @@ RUN pip install \
     scrapy==1.5.1 \
     simplejson==3.16.0 \
     virtualenv==16.0.0 \
-    twisted==18.7.0
+    twisted==18.7.0 \
+    flask \
+    gevent
 
 ENV FLASK_PROXY_PORT 8080
 
 RUN mkdir -p /pythonAction
 ADD pythonrunner.py /pythonAction/
+ADD actionproxy.py /pythonAction/
 RUN rm -rf /action
 RUN mkdir /action
 
-CMD ["/bin/bash", "-c", "cd pythonAction && python -u pythonrunner.py"]
+CMD ["/bin/bash", "-c", "cd pythonAction && python3 -u pythonrunner.py"]
